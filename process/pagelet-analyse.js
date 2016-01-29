@@ -18,7 +18,7 @@ function getId(path, file){
     var prefix = path[0], pageletFile;
 
     if(prefix == '.'){
-        pageletFile = new feather.file(require('path').resolve(file.dirname, path));
+        pageletFile = feather.project.lookup(path, file);
     }else{
         path = '/pagelet' + (prefix == '/' ? '' : '/') + path;
         pageletFile = new feather.file(ROOT + path);

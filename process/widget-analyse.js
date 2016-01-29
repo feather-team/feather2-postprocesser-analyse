@@ -21,7 +21,7 @@ function getId(path, file){
     var prefix = path[0], widgetFile;
 
     if(prefix == '.'){
-        widgetFile = new feather.file(require('path').resolve(file.dirname, path));
+        widgetFile = feather.project.lookup(path, file);
     }else{
         path = '/widget' + (prefix == '/' ? '' : '/') + path;
         widgetFile = new feather.file(ROOT + path);
