@@ -14,7 +14,7 @@ var PROCESSES = {
 };
 
 module.exports = function(content, file, conf){
-	var CHINAS = ['extend-uri', 'require-analyse', 'define-wraper'];
+	var CHINAS = ['extend-uri', 'define-wraper'];
 
 	if(file.isHtmlLike){
 		if(file.isPagelet){
@@ -27,6 +27,8 @@ module.exports = function(content, file, conf){
 			CHINAS.push('pagelet-analyse');
 		}
 	}
+
+	CHINAS.push('require-analyse');
 
 	CHINAS.forEach(function(item){
 		content = PROCESSES[item](content, file, conf);

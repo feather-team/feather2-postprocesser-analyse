@@ -1,11 +1,4 @@
 <!--FEATHER STATIC POSITION:BOTTOM-->
-<?php 
-if(!$this->get('FEATHER_HEAD_RESOURCE_LOADED')){
-	$this->load('widget/_static_.#suffix#', array(
-		'links' => $this->get('FEATHER_USE_STYLES'), 
-		'scripts' => $this->get('FEATHER_USE_SCRIPTS'), 
-		'inlineScripts' => $this->get('FEATHER_SCRIPT2BOTTOMS')
-	));
-}
-?>
+<?php $this->load('widget/_static_.#suffix#', array('type' => 'bottom'));?>
+<?php $this->plugin('script_collection')->output();?>
 <!--FEATHER STATIC POSITION END-->

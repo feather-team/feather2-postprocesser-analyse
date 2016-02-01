@@ -15,15 +15,17 @@ function getModuleId(id, file, sync){
     if(info.file && info.file.isFile()){
         id = info.file.id;
     }else{
-        if(id == 'abc'){
+        if(id == 'abc.js'){
             id = 'static/abc.js';
         }
     }
 
-    if(sync){
-        file.addRequire(id);
-    }else{
-        file.addAsyncRequire(id);
+    if(!feather.util.isRemoteUrl(id)){
+        if(sync){
+            file.addRequire(id);
+        }else{
+            file.addAsyncRequire(id);
+        }
     }
 
     return id;
@@ -58,6 +60,32 @@ module.exports = function(content, file, conf){
 
             return all;
         });
+
+        if(!file.isPagelet){
+            var sameJs = feather.file.wrap(file.id.replace(/\.[^\.]+$/, '.js'));
+    
+            if(sameJs.exists()){
+                feather.compile(sameJs);
+                
+                var url = sameJs.getUrl();
+
+                if(file.asyncs.indexOf(sameJs.id) == -1
+                    && file.extras.headJs.indexOf(url) == -1
+                    && file.extras.bottomJs.indexOf(url) == -1
+                ){
+                    if(/<\/body>/.test(content)){
+                        content = content.replace(/<\/body>/, function(){
+                            return '<script>require.async(\'' + sameJs.id + '\');</script></body>';
+                        });
+                    }else{
+                        content += '<script>require.async(\'' + sameJs.id + '\');</script>';
+                    }
+
+                    file.setContent(content);
+                    file.addAsyncRequire(sameJs.id);
+                }
+            }
+        }        
     }else if(file.isJsLike){
         content = analyseRequire(content, file);
     }

@@ -43,40 +43,12 @@ module.exports = function(content, file, conf){
         return _0;
     });
 
-    if(!file.isPagelet){
+    if(!USE_REQUIRE || file.isPagelet){
         var sameJs = feather.file.wrap(file.id.replace(/\.[^\.]+$/, '.js'));
-    
-        if(sameJs.exists()){
-            feather.compile(sameJs);
-            
-            var url = sameJs.getUrl();
-
-            if(file.asyncs.indexOf(sameJs.id) == -1
-                && headJs.indexOf(url) == -1
-                && bottomJs.indexOf(url) == -1
-            ){
-                if(USE_REQUIRE){
-                    if(/<\/body>/.test(content)){
-                        content = content.replace(/<\/body>/, function(){
-                            return '<script>require.async(\'' + sameJs.id + '\');</script></body>';
-                        });
-                    }else{
-                        content += '<script>require.async(\'' + sameJs.id + '\');</script>';
-                    }
-
-                    file.setContent(content);
-                    file.addAsyncRequire(sameJs.id);
-                }else{
-                    bottomJs.push(sameJs.id);
-                }
-            }
-        }
-
         var sameCss = feather.file.wrap(file.id.replace(/\.[^\.]+$/, '.css'));
 
-        if(sameCss.exists()){
-            css.push(sameCss.id);
-        }
+        sameJs.exists() && bottomJs.push(sameJs.id);
+        sameCss.exists() && css.push(sameCss.id);
     }
 
     file.extras.headJs = feather.util.unique((file.extras.headJs || []).concat(headJs));

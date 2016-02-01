@@ -38,18 +38,17 @@ module.exports = function(content, file, conf){
 
     content = '<' + wraper + ' id="' + id + '" ' + attr + '>\r\n' + content + '</' + wraper + '>';
 
-    var sameCss = feather.file.wrap(file.id.replace(/\.[^\.]+$/, '.css'));
-    var sameJs = feather.file.wrap(file.id.replace(/\.[^\.]+$/, '.js'));
-    var async = ["'static/pagelet.js'"];
+    file.addRequire('static/pagelet.js');
 
-    if(sameCss.exists()){
-        async.push("'" + sameCss.id + "'");
-        file.addAsyncRequire(sameCss.id);
-    }
+    // if(sameCss.exists()){
+    //     async.push("'" + sameCss.id + "'");
+    //     file.addAsyncRequire('static/pagelet.js');
+    //     file.addAsyncRequire(sameCss.id);
+    // }
 
-    if(sameJs.exists()){
-        file.addAsyncRequire(sameJs.id);
-    }
+    // if(sameJs.exists()){
+    //     file.addAsyncRequire(sameJs.id);
+    // }
 
     var p = _id + '_p', globalPidVar = 'self.__pageletDefaultPid__';
 
@@ -57,9 +56,10 @@ module.exports = function(content, file, conf){
 (function(){\r\n\
 var self = window, pid = ' + globalPidVar + ' || \'' + (o.pid || '') + '\';\r\n\
 ' + globalPidVar + ' = null;\r\n\
-require.async([' + async.join(',') + '], function(PageLet){\r\n\
-    pid && PageLet(\'' + id + '\', pid);\
-' + (sameJs.exists() ? '\r\n\trequire.async(\'' + sameJs.id + '\')' : '') + ';\r\n});\r\n\
+var firstAsyncs = [], secondAsyncs;\r\n\
+require.async(firstAsyncs, function(PageLet){\r\n\
+    pid && PageLet(\'' + id + '\', pid);\r\n\
+    secondAsyncs && require.async(secondAsyncs);\r\n});\r\n\
 })();\r\n\
 </script>';
 
