@@ -5,11 +5,23 @@
 
 var SCRIPT_REG = /<!--(?:(?!\[if [^\]]+\]>)[\s\S])*?-->|(<script[^>]*>)([\s\S]*?)<\/script>/ig;
 var REQUIRE_REG = /"(?:[^\\"\r\n\f]|\\[\s\S])*"|'(?:[^\\'\n\r\f]|\\[\s\S])*'|(?:\/\/[^\r\n\f]+|\/\*[\s\S]*?(?:\*\/|$))|require\.async\(([\s\S]+?)(?=,\s*function\(|\))|require\(([^\)]+)\)/g, URL_REG = /['"]([^'"]+)['"]/g;
-var USE_REQUIRE = feather.config.get('require.use');
+var USE_REQUIRE = feather.config.get('require.use'), REQUIRE_CONFIG = feather.config.get('require.config') || {};
 
 var path = require('path');
 
 function getModuleId(id, file, sync){
+    var isRemoteUrl = feather.util.isRemoteUrl(id)
+
+    if(!isRemoteUrl){
+        id = id.replace(/^['"]+|['"]+$/g, '');
+
+        (REQUIRE_CONFIG.rules || []).forEach(function(item){
+            id = id.replace(item[0], item[1]);  
+        });
+
+        id = id.replace(/^\/+/, '');
+    }
+
     var info = feather.project.lookup(id, file);
                     
     if(info.file && info.file.isFile()){
@@ -20,12 +32,10 @@ function getModuleId(id, file, sync){
         }
     }
 
-    if(!feather.util.isRemoteUrl(id)){
-        if(sync){
-            file.addRequire(id);
-        }else{
-            file.addAsyncRequire(id);
-        }
+    if(sync){
+        file.addRequire(id);
+    }else if(!isRemoteUrl){
+        file.addAsyncRequire(id);
     }
 
     return id;

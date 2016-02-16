@@ -23,7 +23,7 @@ module.exports = function(content, file, conf){
 		
 		CHINAS.push('widget-analyse', 'resource-analyse', 'resource-position', 'script2bottom');
 
-		if(file.isPage){
+		if(!file.isPagelet && !file.isWidget){
 			CHINAS.push('pagelet-analyse');
 		}
 	}
