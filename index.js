@@ -17,10 +17,6 @@ module.exports = function(content, file, conf){
 	var CHINAS = ['extend-uri', 'define-wraper'];
 
 	if(file.isHtmlLike){
-		if(file.isPagelet){
-			CHINAS.push('pagelet');
-		}
-		
 		CHINAS.push('widget-analyse', 'resource-analyse', 'resource-position', 'script2bottom');
 
 		if(!file.isPagelet && !file.isWidget){
@@ -29,6 +25,10 @@ module.exports = function(content, file, conf){
 	}
 
 	CHINAS.push('require-analyse');
+
+	if(file.isHtmlLike && file.isPagelet){
+		CHINAS.push('pagelet');
+	}
 
 	CHINAS.forEach(function(item){
 		content = PROCESSES[item](content, file, conf);

@@ -10,32 +10,30 @@ var USE_REQUIRE = feather.config.get('require.use'), REQUIRE_CONFIG = feather.co
 var path = require('path');
 
 function getModuleId(id, file, sync){
-    var isRemoteUrl = feather.util.isRemoteUrl(id)
-
-    if(!isRemoteUrl){
-        id = id.replace(/^['"]+|['"]+$/g, '');
-
-        (REQUIRE_CONFIG.rules || []).forEach(function(item){
-            id = id.replace(item[0], item[1]);  
-        });
-
-        id = id.replace(/^\/+/, '');
-    }
-
     var info = feather.project.lookup(id, file);
-                    
+
     if(info.file && info.file.isFile()){
         id = info.file.id;
     }else{
-        if(id == 'abc.js'){
-            id = 'static/abc.js';
+        var isRemoteUrl = feather.util.isRemoteUrl(id);
+
+        if(!isRemoteUrl){
+            id = id.replace(/^['"]+|['"]+$/g, '');
+
+            (REQUIRE_CONFIG.rules || []).forEach(function(item){
+                id = id.replace(item[0], item[1]);  
+            });
+
+            id = id.replace(/^\/+/, '');
         }
     }
 
-    if(sync){
-        file.addRequire(id);
-    }else if(!isRemoteUrl){
-        file.addAsyncRequire(id);
+    if(!isRemoteUrl){
+        if(sync){
+            file.addRequire(id);
+        }else if(!isRemoteUrl){
+            file.addAsyncRequire(id);
+        }
     }
 
     return id;

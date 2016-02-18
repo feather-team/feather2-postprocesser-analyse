@@ -1,6 +1,6 @@
 'use strict';
 
-var RESOURCE_REG = /[\r\n]*(?:<!--[\s\S]*?-->|<script(\s+[^>]*?src=(['"])((?:<\?[\s\S]+?\?>)?.+?)\2[^>]*)>\s*<\/script>|<link(\s+[^>]*?href=(['"])((?:<\?[\s\S]+?\?>)?.+?)\5[^>]*)>)[\r\n]*/ig;
+var RESOURCE_REG = /[\r\n]*(?:<!--[\s\S]*?-->|<script(\s+[^>]*?src=(['"])((?:.*?<\?[\s\S]+?\?>)?.+?)\2[^>]*)>\s*<\/script>|<link(\s+[^>]*?href=(['"])((?:.*?<\?[\s\S]+?\?>)?.+?)\5[^>]*)>)[\r\n]*/ig;
 var FIXED = /\bfeather-position-fixed\b/i, HEAD = /\bfeather-position-head\b/i, BOTTOM = /\bfeather-position-bottom\b/i, DESTIGNORE = /\bfeather-position-ignore\b/i;
 var ISCSS = /rel=["']?stylesheet['"]?/i;
 
@@ -43,11 +43,14 @@ module.exports = function(content, file, conf){
         return _0;
     });
 
-    if(!USE_REQUIRE || file.isPagelet){
-        var sameJs = feather.file.wrap(file.id.replace(/\.[^\.]+$/, '.js'));
+    if(!USE_REQUIRE){
         var sameCss = feather.file.wrap(file.id.replace(/\.[^\.]+$/, '.css'));
+        sameCss.exists() && css.push(sameCss.id);
 
+        var sameJs = feather.file.wrap(file.id.replace(/\.[^\.]+$/, '.js'));
         sameJs.exists() && bottomJs.push(sameJs.id);
+    }else if(!file.isPagelet){
+        var sameCss = feather.file.wrap(file.id.replace(/\.[^\.]+$/, '.css'));
         sameCss.exists() && css.push(sameCss.id);
     }
 

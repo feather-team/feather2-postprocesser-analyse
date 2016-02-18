@@ -38,17 +38,23 @@ module.exports = function(content, file, conf){
 
     content = '<' + wraper + ' id="' + id + '" ' + attr + '>\r\n' + content + '</' + wraper + '>';
 
-    file.addRequire('static/pagelet.js');
+    file.addAsyncRequire('static/pagelet.js');
+    
+    var async = ['static/pagelet.js'];
 
-    // if(sameCss.exists()){
-    //     async.push("'" + sameCss.id + "'");
-    //     file.addAsyncRequire('static/pagelet.js');
-    //     file.addAsyncRequire(sameCss.id);
-    // }
+    file.addAsyncRequire('static/pagelet.js');
 
-    // if(sameJs.exists()){
-    //     file.addAsyncRequire(sameJs.id);
-    // }
+    var sameCss = feather.file.wrap(file.id.replace(/\.[^\.]+$/, '.css'));
+    var sameJs = feather.file.wrap(file.id.replace(/\.[^\.]+$/, '.js'));
+
+    if(sameCss.exists()){
+        async.push(sameCss.id);
+        file.addAsyncRequire(sameCss.id);
+    }
+
+    if(sameJs.exists()){
+        file.addAsyncRequire(sameJs.id);
+    }
 
     var p = _id + '_p', globalPidVar = 'self.__pageletDefaultPid__';
 
@@ -56,10 +62,9 @@ module.exports = function(content, file, conf){
 (function(){\r\n\
 var self = window, pid = ' + globalPidVar + ' || \'' + (o.pid || '') + '\';\r\n\
 ' + globalPidVar + ' = null;\r\n\
-var firstAsyncs = [], secondAsyncs;\r\n\
-require.async(firstAsyncs, function(PageLet){\r\n\
+require.async(' + feather.util.json(async) + ', function(PageLet){\r\n\
     pid && PageLet(\'' + id + '\', pid);\r\n\
-    secondAsyncs && require.async(secondAsyncs);\r\n});\r\n\
+    ' + (sameJs.exists() ? 'require.async("' + sameJs.id + '");' : '') + '\r\n});\r\n\
 })();\r\n\
 </script>';
 
