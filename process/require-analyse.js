@@ -6,7 +6,7 @@
 var SCRIPT_REG = /<!--(?:(?!\[if [^\]]+\]>)[\s\S])*?-->|(<script[^>]*>)([\s\S]*?)<\/script>/ig;
 var REQUIRE_REG = /"(?:[^\\"\r\n\f]|\\[\s\S])*"|'(?:[^\\'\n\r\f]|\\[\s\S])*'|(?:\/\/[^\r\n\f]+|\/\*[\s\S]*?(?:\*\/|$))|require\.async\(([\s\S]+?)(?=,\s*function\(|\))|require\(([^\)]+)\)/g, URL_REG = /['"]([^'"]+)['"]/g;
 var USE_REQUIRE = feather.config.get('require.use'), REQUIRE_CONFIG = feather.config.get('require.config') || {};
-
+var ROOT = feather.project.getProjectPath();
 var path = require('path');
 
 function getModuleId(id, file, sync){
@@ -70,8 +70,8 @@ module.exports = function(content, file, conf){
         });
 
         if(!file.isPagelet){
-            var sameJs = feather.file.wrap(file.id.replace(/\.[^\.]+$/, '.js'));
-    
+            var sameJs = feather.file(ROOT, file.id.replace(/\.[^\.]+$/, '.js'));
+
             if(sameJs.exists()){
                 feather.compile(sameJs);
                 

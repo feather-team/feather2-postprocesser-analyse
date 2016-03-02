@@ -6,6 +6,7 @@ var ISCSS = /rel=["']?stylesheet['"]?/i;
 
 var PREVIEW_MODE = (feather.settings || {}).dest == 'preview', STATIC_MODE = feather.config.get('staticMode');
 var USE_REQUIRE = feather.config.get('require.use');
+var ROOT = feather.project.getProjectPath();
 
 module.exports = function(content, file, conf){
     var headJs = [], bottomJs = [], css = [], content;
@@ -44,13 +45,13 @@ module.exports = function(content, file, conf){
     });
 
     if(!USE_REQUIRE){
-        var sameCss = feather.file.wrap(file.id.replace(/\.[^\.]+$/, '.css'));
+        var sameCss = feather.file(ROOT, file.id.replace(/\.[^\.]+$/, '.css'));
         sameCss.exists() && css.push(sameCss.id);
 
-        var sameJs = feather.file.wrap(file.id.replace(/\.[^\.]+$/, '.js'));
+        var sameJs = feather.file(ROOT, file.id.replace(/\.[^\.]+$/, '.js'));
         sameJs.exists() && bottomJs.push(sameJs.id);
     }else if(!file.isPagelet){
-        var sameCss = feather.file.wrap(file.id.replace(/\.[^\.]+$/, '.css'));
+        var sameCss = feather.file(ROOT, file.id.replace(/\.[^\.]+$/, '.css'));
         sameCss.exists() && css.push(sameCss.id);
     }
 

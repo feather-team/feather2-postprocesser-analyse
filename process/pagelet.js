@@ -8,7 +8,7 @@
 
 var REG = /<pagelet((?:\?>|[^>])*)>\s*([\s\S]*?)<\/pagelet>/;
 var ATTR_REG = /\s+(id|pid|wraper)=(['"])((?:<\?[\s\S]+\?>|[^\2])+?)\2/g;
-var pageletModuleId;
+var pageletModuleId, ROOT = feather.project.getProjectPath();
 
 module.exports = function(content, file, conf){
     var o = {};
@@ -44,8 +44,8 @@ module.exports = function(content, file, conf){
 
     file.addAsyncRequire('static/pagelet.js');
 
-    var sameCss = feather.file.wrap(file.id.replace(/\.[^\.]+$/, '.css'));
-    var sameJs = feather.file.wrap(file.id.replace(/\.[^\.]+$/, '.js'));
+    var sameCss = feather.file(ROOT, file.id.replace(/\.[^\.]+$/, '.css'));
+    var sameJs = feather.file(ROOT, file.id.replace(/\.[^\.]+$/, '.js'));
 
     if(sameCss.exists()){
         async.push(sameCss.id);
