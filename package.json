@@ -1,0 +1,23 @@
+{
+  "name": "feather2-postprocessor-analyse",
+  "version": "1.0.0",
+  "description": "feather2.0 标准后处理",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/feather-team/feather2-postprocessor-analyse.git"
+  },
+  "keywords": [
+    "feather",
+    "feather2"
+  ],
+  "author": "jsyczhanghao@sina.com",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/feather-team/feather2-postprocessor-analyse/issues"
+  },
+  "homepage": "https://github.com/feather-team/feather2-postprocessor-analyse#readme"
+}
