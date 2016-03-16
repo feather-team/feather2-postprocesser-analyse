@@ -19,14 +19,14 @@ module.exports = function(content, file, conf){
 	if(file.isHtmlLike){
 		CHINAS.push('widget-analyse', 'resource-analyse', 'resource-position', 'script2bottom');
 
-		if(!file.isPagelet && !file.isWidget){
+		if(!file.isPagelet && !file.isWidget && USE_REQUIRE){
 			CHINAS.push('pagelet-analyse');
 		}
 	}
 
 	CHINAS.push('require-analyse');
 
-	if(file.isHtmlLike && file.isPagelet){
+	if(file.isHtmlLike && file.isPagelet && USE_REQUIRE){
 		CHINAS.push('pagelet');
 	}
 
