@@ -50,7 +50,7 @@ module.exports = function(content, file, conf){
 
         var sameJs = feather.file(ROOT, file.id.replace(/\.[^\.]+$/, '.js'));
         sameJs.exists() && bottomJs.push(sameJs.id);
-    }else if(!file.isPagelet){
+    }else{
         var sameCss = feather.file(ROOT, file.id.replace(/\.[^\.]+$/, '.css'));
         sameCss.exists() && css.push(sameCss.id);
     }

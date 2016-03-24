@@ -2,13 +2,13 @@
 
 //pagelet analyse
 /*
-<pagelet name="ui" pid="test" />
-<?php $this->pagelet('ui', 'test', array());?>
+<pagelet name="ui" id="test"/>
+<?php $this->pagelet('ui', 'test', 'ui', array());?>
 */
 
 var REG = /<!--(?:(?!\[if [^\]]+\]>)[\s\S])*?-->|(<\?php\s+(?:(?!\?>)[\s\S])*?(?:\?>|$))|<pagelet((?:\?>|[^>])*)>/ig;
 var PHP_REG = /\$this->pagelet\(\s*['"]([^'"]+)['"](?:\s*,\s*['"]((?:<\?[\s\S]+\?>|[^'"])+?)['"])?/ig;
-var ATTR_REG = /\s+(name|pid)=(['"])((?:<\?[\s\S]+\?>|[^\2])+?)\2/g;
+var ATTR_REG = /\s+(name|id)=(['"])((?:<\?[\s\S]+\?>|[^\2])+?)\2/g;
 var SUFFIX = feather.config.get('template.suffix'), ROOT = feather.project.getProjectPath();
 var SUFFIX_REG = new RegExp('\\.' + SUFFIX + '$');
 
@@ -27,12 +27,8 @@ function getId(path, file){
     return pageletFile.id;
 }
 
-function getScriptContent(id, pid){
-    if(!pid){
-        return '';
-    }
-
-    return '\r\n<script>\r\nwindow.__pageletDefaultPid__ = \'' + pid + '\';\r\n</script>\r\n';
+function getScriptContent(id){
+    return "<?php $this->set('__refPagelet__', true);" + (id ? "$this->set('__refPageletId__', '" + id + "')": "") + "?>";
 }
 
 module.exports = function(content, file){
@@ -40,10 +36,10 @@ module.exports = function(content, file){
 
     content = content.replace(REG, function(all, php, pagelet){
         if(php){
-            return php.replace(PHP_REG, function(all, name, pid){
+            return php.replace(PHP_REG, function(all, name, cid){
                 var id = getId(name, file);
                 pagelets[id] = 1;
-                return ";?>" + getScriptContent(id, pid) + "<?php $this->load('" + id + "'";
+                return ";?>" + getScriptContent(cid) + "<?php $this->load('" + id + "'";
             });
         }else if(pagelet){
             var attrs = {};
@@ -54,7 +50,7 @@ module.exports = function(content, file){
 
             var id = getId(attrs.name, file);
             pagelets[id] = 1;
-            return getScriptContent(id, attrs.pid) + "<?php $this->load('" + id + "');?>";
+            return getScriptContent() + "<?php $this->load('" + id + "');?>";
         }else{
             return all;
         }

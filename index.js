@@ -17,7 +17,7 @@ module.exports = function(content, file, conf){
 	var CHINAS = ['extend-uri', 'define-wraper'];
 
 	if(file.isHtmlLike){
-		CHINAS.push('widget-analyse', 'resource-analyse', 'resource-position', 'script2bottom');
+		CHINAS.push('widget-analyse', 'resource-analyse', 'script2bottom');
 
 		if(!file.isPagelet && !file.isWidget && USE_REQUIRE){
 			CHINAS.push('pagelet-analyse');
@@ -28,6 +28,10 @@ module.exports = function(content, file, conf){
 
 	if(file.isHtmlLike && file.isPagelet && USE_REQUIRE){
 		CHINAS.push('pagelet');
+	}
+
+	if(file.isHtmlLike){
+		CHINAS.push('resource-position');
 	}
 
 	CHINAS.forEach(function(item){

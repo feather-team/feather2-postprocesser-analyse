@@ -8,9 +8,13 @@ var HEAD_TPL = feather.util.read(TPL_DIR + 'head.php').replace('#suffix#', SUFFI
 var BOTTOM_TPL = feather.util.read(TPL_DIR + 'bottom.php').replace('#suffix#', SUFFIX);
 
 module.exports = function(content, file, conf){
-    return content.replace(HEAD_REG, function(all, tag){
-        return HEAD_TPL + (tag || '');
-    }).replace(BOTTOM_REG, function(all, tag){
-        return BOTTOM_TPL + (tag || '');
-    });
+	if(file.isPagelet){
+		return HEAD_TPL + content;
+	}else{
+		return content.replace(HEAD_REG, function(all, tag){
+	        return HEAD_TPL + (tag || '');
+	    }).replace(BOTTOM_REG, function(all, tag){
+	        return BOTTOM_TPL + (tag || '');
+	    });
+	}
 };
