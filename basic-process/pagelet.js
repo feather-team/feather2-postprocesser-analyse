@@ -42,31 +42,21 @@ module.exports = function(content, file, conf){
 
     file.addAsyncRequire('static/pagelet.js');
     
-    var async = ['static/pagelet.js'];
     var sameJs = feather.file(ROOT, file.id.replace(/\.[^\.]+$/, '.js'));
 
     if(sameJs.exists()){
         file.addAsyncRequire(sameJs.id);
     }
 
-    content = '<?php $__refPageletId__ = $this->get(\'__refPageletId__\');?>\r\n'
-            + '<' + wraper + ' id="<?php echo $__refPageletId__ ? $__refPageletId__ : \'' + id + '\';?>" ' + attr + '>\r\n' 
+    content = '<' + wraper + ' id="' + id + '" ' + attr + '>\r\n' 
             + content + '\r\n'
-            + '<?php\r\n'
-            + 'if($this->get(\'__refPagelet__\')){\r\n'
-            + '$__refPageletId__ = null;\r\n'
-            + '$this->set(\'__refPagelet__\', null);\r\n'
-            + '$this->set(\'__refPageletId__\', null);\r\n'
-            + '?>\r\n'
-            + (sameJs.exists() ? '<script>require.async(\'' + sameJs.id + '\')<' + (wraper == 'script' ? '\\/script' : '') + '>\r\n' : '')
-            + '</' + wraper + '>\r\n'
-            + '<?php\r\n'
-            + '}else{\r\n'
-            + '?>\r\n'
             + '</' + wraper + '>'
             + '<script>\r\n'
-            + '(function(){\r\n'    
-            + 'var async = <?php echo isset($FEATHER_PAGELET_CSS_JSON) ? $FEATHER_PAGELET_CSS_JSON : \'[]\';?>;\r\n'
+            + '(function(){\r\n'
+            + 'var self = window;\r\n'
+            + 'self.__refPageletId__ && (document.getElementById(\'' + id + '\')).id = self.__refPageletId__;\r\n'
+            + 'delete self.__refPageletId__;'    
+            + 'var async = self.__pageletAsyncs__ || [];\r\n'
             + 'async.unshift(\'static/pagelet.js\');\r\n'
             + 'require.async(async, function(Pagelet){\r\n'
             + '\tPagelet.init(\'' + id + '\');\r\n'

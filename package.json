@@ -14,10 +14,17 @@
     "feather",
     "feather2"
   ],
-  "author": "jsyczhanghao@sina.com",
+  "author": {
+    "name": "jsyczhanghao@sina.com"
+  },
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/feather-team/feather2-postprocessor-analyse/issues"
   },
-  "homepage": "https://github.com/feather-team/feather2-postprocessor-analyse#readme"
+  "homepage": "https://github.com/feather-team/feather2-postprocessor-analyse#readme",
+  "gitHead": "c0042e6cd4f70324f76553d360b5c3014a91e25c",
+  "readme": "ERROR: No README data found!",
+  "_id": "feather2-postprocessor-analyse@1.0.1",
+  "_shasum": "68e15f191aeaed7b6609f7f8620710e3fedeb3f0",
+  "_from": "feather2-postprocessor-analyse@>=1.0.0 <1.1.0"
 }

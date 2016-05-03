@@ -3,7 +3,7 @@
 //pagelet analyse
 /*
 <pagelet name="ui" id="test"/>
-<?php $this->pagelet('ui', 'test', 'ui', array());?>
+<?php $this->pagelet('ui', 'test', array());?>
 */
 
 var REG = /<!--(?:(?!\[if [^\]]+\]>)[\s\S])*?-->|(<\?php\s+(?:(?!\?>)[\s\S])*?(?:\?>|$))|<pagelet((?:\?>|[^>])*)>/ig;

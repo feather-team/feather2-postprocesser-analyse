@@ -6,7 +6,7 @@ var DEFINE_REG = /\/\/[^\r\n]*|\/\*[\s\S]*?\*\/|\b(define)\s*\(\s*((?:(?!functio
 var USE_REQUIRE = feather.config.get('require.use');
 
 module.exports = function(content, file){
-    if(!USE_REQUIRE || !file.isJsLike) return content;
+    if(!USE_REQUIRE || !file.isJsLike || file.useJsWraper === false) return content;
 
     var found = false;
 
@@ -15,7 +15,7 @@ module.exports = function(content, file){
             found = true;
 
             if(depth == null || depth[0] == '['){
-                return 'define("' + file.id + '",' + (depth || '') + 'function(';
+                return 'define("' + file.id + '", function(';
             }
         }
         
