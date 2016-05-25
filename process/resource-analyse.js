@@ -4,7 +4,7 @@ var RESOURCE_REG = /[\r\n]*(?:<!--[\s\S]*?-->|<script(\s+[^>]*?src=(['"])((?:.*?
 var FIXED = /\bfeather-position-fixed\b/i, HEAD = /\bfeather-position-head\b/i, BOTTOM = /\bfeather-position-bottom\b/i, DESTIGNORE = /\bfeather-position-ignore\b/i;
 var ISCSS = /rel=["']?stylesheet['"]?/i;
 
-var PREVIEW_MODE = feather._argv.dest == 'preview', STATIC_MODE = feather.config.get('staticMode');
+var PREVIEW_MODE = feather._argv.dest == 'preview';
 var USE_REQUIRE = feather.config.get('require.use');
 var ROOT = feather.project.getProjectPath();
 
