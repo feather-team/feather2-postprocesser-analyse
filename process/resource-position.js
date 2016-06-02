@@ -2,7 +2,7 @@
 
 var HEAD_REG = /<!--FEATHER STATIC POSITION:HEAD-->|(<\/head>)/i, BOTTOM_REG = /<!--FEATHER STATIC POSITION:BOTTOM-->|(<\/body>)/i;
 
-var TPL_DIR = __dirname + '/../vendor/tpl/debug/';
+var TPL_DIR = __dirname + '/../vendor/tpl/' + feather.config.get('template.engine') + '/';
 var SUFFIX = feather.config.get('template.suffix');
 var HEAD_TPL = feather.util.read(TPL_DIR + 'head.php').replace('#suffix#', SUFFIX);
 var BOTTOM_TPL = feather.util.read(TPL_DIR + 'bottom.php').replace('#suffix#', SUFFIX);

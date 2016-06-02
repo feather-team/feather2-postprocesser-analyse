@@ -1,18 +1,17 @@
 'use strict';
 
 var USE_REQUIRE = feather.config.get('require.use');
-var PHP_MODE = feather.config.get('project.mode') == 'php';
+var ENGINE = feather.config.get('template.engine');
 var PROCESSES = {
-	'widget-analyse': PHP_MODE ? require('./process/widget-analyse.js') : require('./basic-process/widget-analyse.js'),
+	'widget-analyse': require('./process/widget-analyse/' + ENGINE +'.js'),
 	'resource-analyse': require('./process/resource-analyse.js'),
 	'resource-position': require('./process/resource-position.js'),
 	'script2bottom': require('./process/script2bottom.js'),
 	'extend-uri': require('./process/extend-uri.js'),
-	'pagelet': PHP_MODE ? require('./process/pagelet.js') : require('./basic-process/pagelet.js'),
-	'pagelet-analyse': PHP_MODE ? require('./process/pagelet-analyse.js') : require('./basic-process/pagelet-analyse.js'),
+	'pagelet': require('./process/pagelet.js'),
+	'pagelet-analyse': require('./process/pagelet-analyse.js'),
 	'require-analyse': require('./process/require-analyse.js'),
-	'define-wraper': require('./process/define-wraper.js'),
-	'collection-script2bottom': require('./basic-process/collection-script2bottom.js')
+	'define-wraper': require('./process/define-wraper.js')
 };
 
 module.exports = function(content, file, conf){
@@ -34,10 +33,8 @@ module.exports = function(content, file, conf){
 		}
 	}
 
-	if(file.isHtmlLike && PHP_MODE){
+	if(file.isHtmlLike){
 		CHINAS.push('resource-position', 'script2bottom');
-	}else{
-		CHINAS.push('collection-script2bottom');
 	}
 
 	CHINAS.forEach(function(item){

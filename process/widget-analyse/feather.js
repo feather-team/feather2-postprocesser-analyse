@@ -10,7 +10,7 @@ var REG = /<!--(?:(?!\[if [^\]]+\]>)[\s\S])*?-->|(<\?php\s+(?:(?!\?>)[\s\S])*?(?
 //var PHP_REG = /\$this->widget\(\s*['"]([^'"]+)['"]([^;]*?)(?:,\s*['"]([^'"]+)['"]\s*)?\)\s*;/ig;
 var PHP_REG = /\$this->widget\(\s*['"]([^'"]+)['"]/ig;
 var RULES = feather.config.get('widget.rules'), SUFFIX = feather.config.get('template.suffix'), ROOT = feather.project.getProjectPath();
-var labelAnalyse = require('../lib/labelAnalyse.js');
+var labelAnalyse = require('../../lib/labelAnalyse.js');
 
 function getId(path, file){
     RULES.forEach(function(rule){
