@@ -3,10 +3,9 @@
 //添加define头部
 
 var DEFINE_REG = /\/\/[^\r\n]*|\/\*[\s\S]*?\*\/|\b(define)\s*\(\s*((?:(?!function\()[\s\S])+,)?\s*function\(/g;
-var USE_REQUIRE = feather.config.get('require.use');
 
 module.exports = function(content, file){
-    if(!USE_REQUIRE || !file.isJsLike || file.useJsWraper === false) return content;
+    if(!file.isJsLike || file.useJsWraper === false) return content;
 
     var found = false;
 

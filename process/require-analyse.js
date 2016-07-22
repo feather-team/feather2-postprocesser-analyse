@@ -5,10 +5,9 @@
 
 var SCRIPT_REG = /<!--(?:(?!\[if [^\]]+\]>)[\s\S])*?-->|(<script[^>]*>)([\s\S]*?)<\/script>/ig;
 var REQUIRE_REG = /"(?:[^\\"\r\n\f]|\\[\s\S])*"|'(?:[^\\'\n\r\f]|\\[\s\S])*'|(?:\/\/[^\r\n\f]+|\/\*[\s\S]*?(?:\*\/|$))|require\.async\(([\s\S]+?)(?=,\s*function\(|\))|require\(([^\)]+)\)/g, URL_REG = /['"]([^'"]+)['"]/g;
-var USE_REQUIRE = feather.config.get('require.use'), REQUIRE_CONFIG = feather.config.get('require.config') || {};
+var REQUIRE_CONFIG = feather.config.get('require.config') || {};
 var SUFFIX_REG = new RegExp('\\.' + feather.config.get('template.suffix') + '$');
 var ROOT = feather.project.getProjectPath();
-var path = require('path');
 
 function getModuleId(id, file, sync){
     var info = feather.project.lookup(id, file);
@@ -59,8 +58,6 @@ function analyseRequire(content, file){
 }
 
 module.exports = function(content, file, conf){
-    if(!USE_REQUIRE) return content;
-
     if(file.isHtmlLike){
         content = content.replace(SCRIPT_REG, function(all, tag, script){
             if(script){
@@ -70,31 +67,24 @@ module.exports = function(content, file, conf){
             return all;
         });
 
-        if(!file.isPagelet){
-            var sameJs = feather.file(ROOT, file.id.replace(SUFFIX_REG, '.js'));
+        var sameJsId = file.id.replace(SUFFIX_REG, '.js');
+
+        if(file.asyncs.indexOf(sameJsId) == -1){
+            var sameJs = feather.file(ROOT, sameJsId);
 
             if(sameJs.exists()){
-                feather.compile(sameJs);
-                
-                var url = sameJs.getUrl();
-
-                if(file.asyncs.indexOf(sameJs.id) == -1
-                    && file.extras.headJs.indexOf(url) == -1
-                    && file.extras.bottomJs.indexOf(url) == -1
-                ){
-                    if(/<\/body>/.test(content)){
-                        content = content.replace(/<\/body>/, function(){
-                            return '<script>require.async(\'' + sameJs.id + '\');</script></body>';
-                        });
-                    }else{
-                        content += '<script>require.async(\'' + sameJs.id + '\');</script>';
-                    }
-
-                    file.setContent(content);
-                    file.addAsyncRequire(sameJs.id);
+                if(/<\/body>/.test(content)){
+                    content = content.replace(/<\/body>/, function(all){
+                        return '<script>require.async(\'' + sameJsId + '\');</script>' + all;
+                    });
+                }else{
+                    content += '<script>require.async(\'' + sameJsId + '\');</script>';
                 }
+
+                file.setContent(content);
+                file.addAsyncRequire(sameJsId);
             }
-        }        
+        }       
     }else if(file.isJsLike){
         content = analyseRequire(content, file);
     }

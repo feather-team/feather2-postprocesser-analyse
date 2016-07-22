@@ -44,16 +44,8 @@ module.exports = function(content, file, conf){
         return _0;
     });
 
-    if(!USE_REQUIRE){
-        var sameCss = feather.file(ROOT, file.id.replace(/\.[^\.]+$/, '.css'));
-        sameCss.exists() && css.push(sameCss.id);
-
-        var sameJs = feather.file(ROOT, file.id.replace(/\.[^\.]+$/, '.js'));
-        sameJs.exists() && bottomJs.push(sameJs.id);
-    }else{
-        var sameCss = feather.file(ROOT, file.id.replace(/\.[^\.]+$/, '.css'));
-        sameCss.exists() && css.push(sameCss.id);
-    }
+    var sameCss = feather.file(ROOT, file.id.replace(/\.[^\.]+$/, '.css'));
+    sameCss.exists() && css.push(sameCss.id);
 
     file.extras.headJs = feather.util.unique((file.extras.headJs || []).concat(headJs));
     file.extras.bottomJs = feather.util.unique((file.extras.bottomJs || []).concat(bottomJs));
