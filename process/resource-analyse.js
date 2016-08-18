@@ -1,12 +1,10 @@
+
+
 'use strict';
 
 var RESOURCE_REG = /[\r\n]*(?:<!--[\s\S]*?-->|<script(\s+[^>]*?src=(['"])((?:.*?<\?[\s\S]+?\?>)?.+?)\2[^>]*)>\s*<\/script>|<link(\s+[^>]*?href=(['"])((?:.*?<\?[\s\S]+?\?>)?.+?)\5[^>]*)>)[\r\n]*/ig;
 var FIXED = /\bfeather-position-fixed\b/i, HEAD = /\bfeather-position-head\b/i, BOTTOM = /\bfeather-position-bottom\b/i, DESTIGNORE = /\bfeather-position-ignore\b/i;
 var ISCSS = /rel=["']?stylesheet['"]?/i;
-
-var PREVIEW_MODE = feather._argv.dest == 'preview';
-var USE_REQUIRE = feather.config.get('require.use');
-var ROOT = feather.project.getProjectPath();
 
 module.exports = function(content, file, conf){
     var headJs = [], bottomJs = [], css = [], content;
@@ -15,7 +13,7 @@ module.exports = function(content, file, conf){
         //如果是fixed 跳过
         if(_1){
             if(!FIXED.test(_1)){
-                if(!PREVIEW_MODE){
+                if(!feather.isPreviewMode){
                     if(DESTIGNORE.test(_1)) return '';
                 }
 
@@ -32,7 +30,7 @@ module.exports = function(content, file, conf){
                 return '<script' + _1.replace(/\s*feather-position-fixed\s*/, ' ').replace(/\s+$/, '') + '></script>';
             }
         }else if(_4 && ISCSS.test(_4)){
-            if(!PREVIEW_MODE){
+            if(!feather.isPreviewMode){
                 if(DESTIGNORE.test(_4)) return '';
             }
 
@@ -44,7 +42,7 @@ module.exports = function(content, file, conf){
         return _0;
     });
 
-    var sameCss = feather.file(ROOT, file.id.replace(/\.[^\.]+$/, '.css'));
+    var sameCss = feather.file(feather.project.getProjectPath() + file.subpath.replace(/\.[^\.]+$/, '.css'));
     sameCss.exists() && css.push(sameCss.id);
 
     file.extras.headJs = feather.util.unique((file.extras.headJs || []).concat(headJs));

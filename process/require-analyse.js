@@ -5,35 +5,20 @@
 
 var SCRIPT_REG = /<!--(?:(?!\[if [^\]]+\]>)[\s\S])*?-->|(<script[^>]*>)([\s\S]*?)<\/script>/ig;
 var REQUIRE_REG = /"(?:[^\\"\r\n\f]|\\[\s\S])*"|'(?:[^\\'\n\r\f]|\\[\s\S])*'|(?:\/\/[^\r\n\f]+|\/\*[\s\S]*?(?:\*\/|$))|require\.async\(([\s\S]+?)(?=,\s*function\(|\))|require\(([^\)]+)\)/g, URL_REG = /['"]([^'"]+)['"]/g;
-var REQUIRE_CONFIG = feather.config.get('require.config') || {};
-var SUFFIX_REG = new RegExp('\\.' + feather.config.get('template.suffix') + '$');
-var ROOT = feather.project.getProjectPath();
 
 function getModuleId(id, file, sync){
     var info = feather.project.lookup(id, file);
 
-    if(info.file && info.file.isFile()){
-        id = info.file.id;
-    }else{
-        var isRemoteUrl = feather.util.isRemoteUrl(id);
+    if(info.file && info.file.isFile() || /^\/?static\/pagelet.js$/.test(info.id)){
+        id = info.file ? info.file.id : 'static/pagelet.js';
 
-        if(!isRemoteUrl){
-            id = id.replace(/^['"]+|['"]+$/g, '');
-
-            (REQUIRE_CONFIG.rules || []).forEach(function(item){
-                id = id.replace(item[0], item[1]);  
-            });
-
-            id = id.replace(/^\/+/, '');
-        }
-    }
-
-    if(!isRemoteUrl){
         if(sync){
             file.addRequire(id);
-        }else if(!isRemoteUrl){
+        }else{
             file.addAsyncRequire(id);
         }
+    }else{
+        id = info.rest;
     }
 
     return id;
@@ -67,23 +52,20 @@ module.exports = function(content, file, conf){
             return all;
         });
 
-        var sameJsId = file.id.replace(SUFFIX_REG, '.js');
+        var sameJs = feather.file(feather.project.getProjectPath() + file.subpath.replace(/\.[^\.]+$/, '.js'));
+        var sameJsId = sameJs.id;
 
-        if(file.asyncs.indexOf(sameJsId) == -1){
-            var sameJs = feather.file(ROOT, sameJsId);
-
-            if(sameJs.exists()){
-                if(/<\/body>/.test(content)){
-                    content = content.replace(/<\/body>/, function(all){
-                        return '<script>require.async(\'' + sameJsId + '\');</script>' + all;
-                    });
-                }else{
-                    content += '<script>require.async(\'' + sameJsId + '\');</script>';
-                }
-
-                file.setContent(content);
-                file.addAsyncRequire(sameJsId);
+        if(file.asyncs.indexOf(sameJsId) == -1 && sameJs.exists()){
+            if(/<\/body>/.test(content)){
+                content = content.replace(/<\/body>/, function(all){
+                    return '<script>require.async(\'' + sameJsId + '\');</script>' + all;
+                });
+            }else{
+                content += '<script>require.async(\'' + sameJsId + '\');</script>';
             }
+
+            file.setContent(content);
+            file.addAsyncRequire(sameJsId);
         }       
     }else if(file.isJsLike){
         content = analyseRequire(content, file);
