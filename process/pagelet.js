@@ -7,7 +7,7 @@ module.exports = function(content, file, conf){
             + '<script>(function(){'
             + 'var elem = document.getElementById("' + id + '");'
             + 'elem.removeAttribute("id");'
-            + 'var nls = "##PLACEHOLDER_PAGELET_ASYNCS:' + file.id + '##";'
+            + 'var nls = [/*PAGELET_ASYNCS_PLACEHOLDER:' + file.id + '*/];'
             + 'require.async([\'static/pagelet.js\'].concat(nls), function(Pagelet){'
             + 'Pagelet.init(elem)'
             + '});'
