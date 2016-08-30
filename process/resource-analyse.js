@@ -2,44 +2,39 @@
 
 'use strict';
 
-var RESOURCE_REG = /[\r\n]*(?:<!--[\s\S]*?-->|<script(\s+[^>]*?src=(['"])((?:.*?<\?[\s\S]+?\?>)?.+?)\2[^>]*)>\s*<\/script>|<link(\s+[^>]*?href=(['"])((?:.*?<\?[\s\S]+?\?>)?.+?)\5[^>]*)>)[\r\n]*/ig;
-var FIXED = /\bfeather-position-fixed\b/i, HEAD = /\bfeather-position-head\b/i, BOTTOM = /\bfeather-position-bottom\b/i, DESTIGNORE = /\bfeather-position-ignore\b/i;
+var RESOURCE_REG = /[\r\n]*(?:<!--[\s\S]*?-->|<script(\s+[^>]*?src=['"]([^'"]+)['"][^>]*)>\s*<\/script>|<link(\s+[^>]*?href=['"]([^'"]+)['"][^>]*)>)[\r\n]*/ig;
+var FIXED = /\bfixed\b/i, HEAD = /\bhead\b/i, DESTIGNORE = /\bignore\b/i;
 var ISCSS = /rel=["']?stylesheet['"]?/i;
 
 module.exports = function(content, file, conf){
     var headJs = [], bottomJs = [], css = [], content;
 
-    content = content.replace(RESOURCE_REG, function(_0, _1, _2, _3, _4, _5, _6){
+    content = content.replace(RESOURCE_REG, function(all, scriptContent, src, linkContent, href){
         //如果是fixed 跳过
-        if(_1){
-            if(!FIXED.test(_1)){
-                if(!feather.isPreviewMode){
-                    if(DESTIGNORE.test(_1)) return '';
-                }
-
-                //头部js
-                if(HEAD.test(_1)){
-                    headJs.push(_3);
-                }else{
-                    //尾部js
-                    bottomJs.push(_3);
+        if(scriptContent){
+            if(!FIXED.test(scriptContent)){
+                if(!feather.isPreviewMode && !DESTIGNORE.test(scriptContent) || feather.isPreviewMode){
+                    HEAD.test(scriptContent) ? headJs.push(src) : bottomJs.push(src);
                 }
 
                 return '';
             }else{
-                return '<script' + _1.replace(/\s*feather-position-fixed\s*/, ' ').replace(/\s+$/, '') + '></script>';
+                return '<script ' + scriptContent
+                .replace(/\s*fixed\s*/, ' ').trim() + '></script>';
             }
-        }else if(_4 && ISCSS.test(_4)){
-            if(!feather.isPreviewMode){
-                if(DESTIGNORE.test(_4)) return '';
-            }
+        }else if(linkContent && ISCSS.test(linkContent)){
+            if(!FIXED.test(linkContent)){
+                if(!feather.isPreviewMode && !DESTIGNORE.test(linkContent) || feather.isPreviewMode){
+                    css.push(href);
+                }
 
-            //css
-            css.push(_6);
-            return '';
+                return '';
+            }else{
+                return '<link ' + linkContent.replace(/\s*fixed\s*/, ' ').trim() + '>';
+            }
         }
 
-        return _0;
+        return all;
     });
 
     var sameCss = feather.file(feather.project.getProjectPath() + file.subpath.replace(/\.[^\.]+$/, '.css'));
