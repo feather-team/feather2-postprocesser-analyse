@@ -1,5 +1,3 @@
-
-
 'use strict';
 
 var RESOURCE_REG = /[\r\n]*(?:<!--[\s\S]*?-->|<script(\s+[^>]*?src=['"]([^'"]+)['"][^>]*)>\s*<\/script>|<link(\s+[^>]*?href=['"]([^'"]+)['"][^>]*)>)[\r\n]*/ig;

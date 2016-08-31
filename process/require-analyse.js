@@ -7,7 +7,15 @@ var SCRIPT_REG = /<!--(?:(?!\[if [^\]]+\]>)[\s\S])*?-->|(<script[^>]*>)([\s\S]*?
 var REQUIRE_REG = /"(?:[^\\"\r\n\f]|\\[\s\S])*"|'(?:[^\\'\n\r\f]|\\[\s\S])*'|(?:\/\/[^\r\n\f]+|\/\*[\s\S]*?(?:\*\/|$))|require\.async\(([\s\S]+?)(?=,\s*function\(|\))|require\(([^\)]+)\)/g, URL_REG = /['"]([^'"]+)['"]/g;
 
 function getModuleId(id, file, sync){
-    var info = feather.project.lookup(id, file);
+    var info;
+
+    id = feather.util.stringQuote(id).rest;
+
+    if(!/\.[^\.\/]+$/.test(id)){
+        id += '.js';
+    }
+
+    info = feather.project.lookup(id, file);
 
     if(info.file && info.file.isFile() || /^\/?static\/pagelet.js$/.test(info.id)){
         id = info.file ? info.file.id : 'static/pagelet.js';
