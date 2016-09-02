@@ -35,7 +35,7 @@ module.exports = function(content, file, conf){
         return all;
     });
 
-    var sameCss = feather.file(feather.project.getProjectPath() + file.subpath.replace(/\.[^\.]+$/, '.css'));
+    var sameCss = feather.file(feather.project.getProjectPath() + file.subpath.slice(0, -feather.config.get('template.suffix').length) + 'css');
     sameCss.exists() && css.push(sameCss.id);
 
     file.extras.headJs = feather.util.unique((file.extras.headJs || []).concat(headJs));
