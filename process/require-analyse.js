@@ -7,28 +7,36 @@ var SCRIPT_REG = /<!--(?:(?!\[if [^\]]+\]>)[\s\S])*?-->|(<script[^>]*>)([\s\S]*?
 var REQUIRE_REG = /"(?:[^\\"\r\n\f]|\\[\s\S])*"|'(?:[^\\'\n\r\f]|\\[\s\S])*'|(?:\/\/[^\r\n\f]+|\/\*[\s\S]*?(?:\*\/|$))|require\.async\(([\s\S]+?)(?=,\s*function\(|\))|require\(([^\)]+)\)/g, URL_REG = /['"]([^'"]+)['"]/g;
 
 function getModuleId(id, file, sync){
-    var info = feather.project.lookup(id, file);
+    if(/^\/?static\/pagelet(?:.js)?$/.test(id)){
+        id = 'static/pagelet.js';
+    }else{
+        var info = feather.project.lookup(id, file);
 
-    if(!info.file || !info.file.isFile()){
-        id = feather.util.stringQuote(id).rest;
+        if(!info.file || !info.file.isFile()){
+            id = feather.util.stringQuote(id).rest;
 
-        if(!/\.[^\.\/]+$/.test(id)){
-            id += '.js';
+            if(!/\.[^\.\/]+$/.test(id)){
+                id += '.js';
+
+                var sInfo = feather.project.lookup(id, file);
+
+                if(!sInfo.file || !sInfo.file.isFile()){
+                    return info.rest;
+                }else{
+                    id = sInfo.file.id;
+                }
+            }else{
+                return info.rest;
+            }
+        }else{
+            id = info.file.id;
         }
     }
 
-    info = feather.project.lookup(id, file);
-
-    if(info.file && info.file.isFile() || /^\/?static\/pagelet.js$/.test(info.id)){
-        id = info.file ? info.file.id : 'static/pagelet.js';
-
-        if(sync){
-            file.addRequire(id);
-        }else{
-            file.addAsyncRequire(id);
-        }
+    if(sync){
+        file.addRequire(id);
     }else{
-        id = info.rest;
+        file.addAsyncRequire(id);
     }
 
     return id;

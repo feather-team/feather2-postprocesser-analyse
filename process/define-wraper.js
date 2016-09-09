@@ -6,7 +6,7 @@ var DEFINE_REG = /\/\/[^\r\n]*|\/\*[\s\S]*?\*\/|\b(define)\s*\(\s*((?:(?!functio
 var amdReg = /(\(\s*|&&\s*)define\.amd/;
 
 module.exports = function(content, file){
-    if(!file.isJsLike || file.useJsWraper === false) return content;
+    if(file.useJsWraper === false) return content;
 
     var found = false;
 
