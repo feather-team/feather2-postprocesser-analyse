@@ -70,7 +70,7 @@ module.exports = function(content, file, conf){
             return all;
         });
 
-        var sameJs = feather.file(feather.project.getProjectPath() + file.subpath.slice(0, -feather.config.get('template.suffix').length) + 'js');
+        var sameJs = feather.file(feather.project.getProjectPath() + file.subpath.replace('__bak__', '').slice(0, -feather.config.get('template.suffix').length) + 'js');
         var sameJsId = sameJs.id;
 
         if(file.asyncs.indexOf(sameJsId) == -1 && sameJs.exists()){
