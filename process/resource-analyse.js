@@ -3,6 +3,7 @@
 var RESOURCE_REG = /[\r\n]*(?:<!--[\s\S]*?-->|<script(\s+[^>]*?src=['"]([^'"]+)['"][^>]*)>\s*<\/script>|<link(\s+[^>]*?href=['"]([^'"]+)['"][^>]*)>)[\r\n]*/ig;
 var FIXED = /\bfixed\b/i, HEAD = /\bhead\b/i, DESTIGNORE = /\bignore\b/i;
 var ISCSS = /rel=["']?stylesheet['"]?/i;
+var _ = require('../util.js');
 
 module.exports = function(content, file, conf){
     var headJs = [], bottomJs = [], css = [], content;
@@ -35,8 +36,11 @@ module.exports = function(content, file, conf){
         return all;
     });
 
-    var sameCss = feather.file(feather.project.getProjectPath() + file.subpath.replace('__bak__', '').slice(0, -feather.config.get('template.suffix').length) + 'css');
-    sameCss.exists() && css.push(sameCss.id);
+    var sameCss = _.same(file, ['css', 'less']);
+
+    if(sameCss && sameCss.exists()){
+        css.push(sameCss.id);
+    }
 
     file.extras.headJs = feather.util.unique((file.extras.headJs || []).concat(headJs));
     file.extras.bottomJs = feather.util.unique((file.extras.bottomJs || []).concat(bottomJs));

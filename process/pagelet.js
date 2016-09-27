@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = function(content, file, conf){
-    var found = false, id = file.subpathNoExt.replace(/\//g, '_').replace('_', '');
+    var found = false, id = file.subpathNoExt.replace(/\//g, '_').replace('__bak__', '').replace('_', '');
 
     content = '<code style="display: none;" id="' + id + '">' + content + '</code>'
             + '<script>(function(){'

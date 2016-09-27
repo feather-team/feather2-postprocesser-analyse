@@ -5,6 +5,7 @@
 
 var SCRIPT_REG = /<!--(?:(?!\[if [^\]]+\]>)[\s\S])*?-->|(<script[^>]*>)([\s\S]*?)<\/script>/ig;
 var REQUIRE_REG = /"(?:[^\\"\r\n\f]|\\[\s\S])*"|'(?:[^\\'\n\r\f]|\\[\s\S])*'|(?:\/\/[^\r\n\f]+|\/\*[\s\S]*?(?:\*\/|$))|require\.async\(([\s\S]+?)(?=,\s*function\(|\))|require\(([^\)]+)\)/g, URL_REG = /['"]([^'"]+)['"]/g;
+var _ = require('../util.js');
 
 function getModuleId(id, file, sync){
     if(/^\/?static\/pagelet(?:.js)?$/.test(id)){
@@ -70,21 +71,24 @@ module.exports = function(content, file, conf){
             return all;
         });
 
-        var sameJs = feather.file(feather.project.getProjectPath() + file.subpath.replace('__bak__', '').slice(0, -feather.config.get('template.suffix').length) + 'js');
-        var sameJsId = sameJs.id;
+        var sameJs = _.same(file, feather.config.get('project.fileType.js', []));
 
-        if(file.asyncs.indexOf(sameJsId) == -1 && sameJs.exists()){
-            if(/<\/body>/.test(content)){
-                content = content.replace(/<\/body>/, function(all){
-                    return '<script>require.async(\'' + sameJsId + '\');</script>' + all;
-                });
-            }else{
-                content += '<script>require.async(\'' + sameJsId + '\');</script>';
-            }
+        if(sameJs){
+            var sameJsId = sameJs.id;
 
-            file.setContent(content);
-            file.addAsyncRequire(sameJsId);
-        }       
+            if(file.asyncs.indexOf(sameJsId) == -1){
+                if(/<\/body>/.test(content)){
+                    content = content.replace(/<\/body>/, function(all){
+                        return '<script>require.async(\'' + sameJsId + '\');</script>' + all;
+                    });
+                }else{
+                    content += '<script>require.async(\'' + sameJsId + '\');</script>';
+                }
+
+                file.setContent(content);
+                file.addAsyncRequire(sameJsId);
+            }       
+        }
     }else if(file.isJsLike){
         content = analyseRequire(content, file);
     }
