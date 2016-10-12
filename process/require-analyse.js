@@ -7,16 +7,25 @@ var SCRIPT_REG = /<!--(?:(?!\[if [^\]]+\]>)[\s\S])*?-->|(<script[^>]*>)([\s\S]*?
 var REQUIRE_REG = /"(?:[^\\"\r\n\f]|\\[\s\S])*"|'(?:[^\\'\n\r\f]|\\[\s\S])*'|(?:\/\/[^\r\n\f]+|\/\*[\s\S]*?(?:\*\/|$))|require\.async\(([\s\S]+?)(?=,\s*function\(|\))|require\(([^\)]+)\)/g, URL_REG = /['"]([^'"]+)['"]/g;
 var _ = require('../util.js');
 
+function requireReplaceRules(id){
+    feather.config.get('require.config.rules', []).forEach(function(item){
+        id = id.replace(item[0], item[1]);
+    }); 
+
+    return id;
+}
+
 function getModuleId(id, file, sync){
     if(/^\/?static\/pagelet(?:.js)?$/.test(id)){
         id = 'static/pagelet.js';
     }else{
+        id = feather.util.stringQuote(id).rest;
+        id = requireReplaceRules(id);
+
         var info = feather.project.lookup(id, file);
 
         if(!info.file || !info.file.isFile()){
-            id = feather.util.stringQuote(id).rest;
-
-            if(!/\.[^\.\/]+$/.test(id)){
+            if(!/\.js$/.test(id)){
                 id += '.js';
 
                 var sInfo = feather.project.lookup(id, file);
