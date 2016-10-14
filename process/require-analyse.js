@@ -22,13 +22,18 @@ function getModuleId(id, file, sync){
         id = feather.util.stringQuote(id).rest;
         id = requireReplaceRules(id);
 
+        var suffix = id.match(/(\.[^\.\/]+)$/);
+        var noSuffix = !suffix || feather.config.get('component.ext').indexOf(suffix[1]) == -1;
+
+        if(id[0] == '.' && noSuffix){
+            id += '.js';
+        }
+
         var info = feather.project.lookup(id, file);
 
         if(!info.file || !info.file.isFile()){
-            if(!/\.js$/.test(id)){
-                id += '.js';
-
-                var sInfo = feather.project.lookup(id, file);
+            if(noSuffix && !/^[\.\/]/.test(id)){
+                var sInfo = feather.project.lookup(id + '.js', file);
 
                 if(!sInfo.file || !sInfo.file.isFile()){
                     return info.rest;
