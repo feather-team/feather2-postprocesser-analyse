@@ -2,7 +2,7 @@
 
 //添加define头部
 
-var DEFINE_REG = /\/\/[^\r\n]*|\/\*[\s\S]*?\*\/|\b(define)\s*\(\s*((?:(?!function\()[\s\S])+,)?\s*function\(/g;
+var DEFINE_REG = /\/\/[^\r\n]*|\/\*[\s\S]*?\*\/|\.define|\b(define)\s*\(\s*((?:(?!function\()[\s\S])+,)?\s*function\(/g;
 var amdReg = /(\(\s*|&&\s*)define\.amd/;
 
 module.exports = function(content, file){
