@@ -88,19 +88,25 @@ module.exports = function(content, file, conf){
         var sameJs = _.same(file, feather.config.get('project.fileType.js', []));
 
         if(sameJs){
-            var sameJsId = sameJs.id;
+            feather.compile(sameJs);
 
-            if(file.asyncs.indexOf(sameJsId) == -1){
-                if(/<\/body>/.test(content)){
-                    content = content.replace(/<\/body>/, function(all){
-                        return '<script>require.async(\'' + sameJsId + '\');</script>' + all;
-                    });
+            var sameJsId = sameJs.id, sameJsUrl = sameJs.getUrl();
+
+            if(file.asyncs.indexOf(sameJsId) == -1 && file.extras.headJs.indexOf(sameJsUrl) == -1 &&  file.extras.bottomJs.indexOf(sameJsUrl) == -1){
+                if(file.useSameJsRequireAsync === false){
+                    file.extras.bottomJs.push(sameJsId);
                 }else{
-                    content += '<script>require.async(\'' + sameJsId + '\');</script>';
-                }
+                    if(/<\/body>/.test(content)){
+                        content = content.replace(/<\/body>/, function(all){
+                            return '<script>require.async(\'' + sameJsId + '\');</script>' + all;
+                        });
+                    }else{
+                        content += '<script>require.async(\'' + sameJsId + '\');</script>';
+                    }
 
-                file.setContent(content);
-                file.addAsyncRequire(sameJsId);
+                    file.setContent(content);
+                    file.addAsyncRequire(sameJsId);
+                }
             }       
         }
     }else if(file.isJsLike){
