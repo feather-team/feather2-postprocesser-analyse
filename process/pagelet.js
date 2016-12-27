@@ -3,7 +3,7 @@
 module.exports = function(content, file, conf){
     var found = false, id = file.subpathNoExt.replace(/\//g, '_').replace('__bak__', '').replace('_', '');
 
-    content = '<textarea id="' + id + '">' + content.replace(/<\/textarea>/g, '<\\/textarea>') + '</textarea>'
+    content = '<textarea style="display: none;" id="' + id + '">' + content.replace(/<\/textarea>/g, '<\\/textarea>') + '</textarea>'
             + '<script>(function(){'
             + 'var elem = document.getElementById("' + id + '");'
             + 'elem.value = elem.value.replace(/<\\\\\\\/textarea>/g, \'</textarea>\');'
