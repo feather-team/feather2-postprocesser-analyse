@@ -26,6 +26,10 @@ function getModuleId(id, file, sync){
         var noSuffix = !suffix || feather.config.get('component.ext').indexOf(suffix[1]) == -1;
 
         if(id[0] == '.' && noSuffix){
+            if(id.slice(-1) == '/'){
+                id = id + 'index';
+            }
+
             id += '.js';
         }
 
