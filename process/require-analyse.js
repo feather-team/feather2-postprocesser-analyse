@@ -24,19 +24,24 @@ function getModuleId(id, file, sync){
 
         var suffix = id.match(/(\.[^\.\/]+)$/);
         var noSuffix = !suffix || feather.config.get('component.ext').indexOf(suffix[1]) == -1;
-
-        if(!file.isComponent && noSuffix){
-            if(id.substr(-1) == '/'){
-                id += 'index';
-            }
-            
-            id += '.js';
-        }
-
         var info = feather.project.lookup(id, file);
 
         if(!info.file || !info.file.isFile()){
-            return info.rest;
+            if(!file.isComponent && noSuffix){
+                if(id.substr(-1) == '/'){
+                    id += 'index';
+                }
+                
+                var sInfo = feather.project.lookup(id + '.js', file);
+
+                if(!sInfo.file || !sInfo.file.isFile()){
+                    return info.rest;
+                }else{
+                    id = sInfo.file.id;
+                }
+            }else{
+                return info.rest;
+            }
         }else{
             id = info.file.id;
         }
