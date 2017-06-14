@@ -36,7 +36,7 @@ module.exports = function(content, file, conf){
         return all;
     });
 
-    var sameCss = _.same(file, ['css', 'less']);
+    var sameCss = _.same(file, feather.config.get('project.fileType.css'));
 
     if(sameCss && sameCss.exists()){
         css.push(sameCss.id);
