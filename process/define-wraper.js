@@ -8,6 +8,10 @@ var amdReg = /(\(\s*|&&\s*)define\.amd/;
 module.exports = function(content, file){
     if(file.useJsWraper === false) return content;
 
+    if(/\/\/!useJsWraper/.test(content)){
+        return content;
+    }
+
     var found = false;
 
     if(amdReg.test(content)){
